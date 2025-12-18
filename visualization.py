@@ -7,7 +7,7 @@ import torch.nn.functional as F
 
 
 def plot_confusion_matrix(cm, class_names, save_path, title="Confusion Matrix"):
-    """绘制混淆矩阵"""
+    """绘制混淆矩阵：展示真实标签与预测标签的对应关系"""
     fig, ax = plt.subplots(figsize=(8, 6), dpi=150)
     im = ax.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues)
     ax.figure.colorbar(im, ax=ax)
@@ -26,7 +26,7 @@ def plot_confusion_matrix(cm, class_names, save_path, title="Confusion Matrix"):
 
 
 def plot_radar_chart(metrics_dict, class_names, save_path):
-    """绘制雷达图：展示每个类别的精确率、召回率、F1"""
+    """绘制雷达图：以极坐标形式展示每个类别的精确率、召回率、F1分数"""
     fig, ax = plt.subplots(figsize=(10, 8), subplot_kw=dict(projection='polar'), dpi=150)
     angles = np.linspace(0, 2 * np.pi, len(class_names), endpoint=False).tolist()
     angles += angles[:1]  # 闭合
@@ -58,7 +58,7 @@ def plot_radar_chart(metrics_dict, class_names, save_path):
 
 
 def plot_convergence_curves(train_accs, test_clean_accs, test_noisy_accs, train_losses, save_path):
-    """绘制准确率和损失率的收敛曲线"""
+    """绘制收敛曲线：展示训练和测试准确率以及训练损失随epoch的变化"""
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5), dpi=150)
     
     epochs = range(len(train_accs))
@@ -85,7 +85,7 @@ def plot_convergence_curves(train_accs, test_clean_accs, test_noisy_accs, train_
 
 
 def plot_metrics_bar(metrics_dict, class_names, save_path):
-    """绘制每个类别的精确率柱状图"""
+    """绘制柱状图：展示每个类别的精确率、召回率和F1分数"""
     fig, ax = plt.subplots(figsize=(10, 6), dpi=150)
     x = np.arange(len(class_names))
     width = 0.25
@@ -112,7 +112,7 @@ def plot_metrics_bar(metrics_dict, class_names, save_path):
 
 
 def plot_batch_size_line(batch_results, save_path):
-    """绘制不同batch size的性能折线图"""
+    """绘制折线图：展示不同batch size下的准确率和F1分数"""
     if not batch_results:
         return
     fig, ax = plt.subplots(figsize=(10, 6), dpi=150)
@@ -133,7 +133,7 @@ def plot_batch_size_line(batch_results, save_path):
 
 
 def plot_hidden_state_heatmap(h_all, save_path, title="Hidden State Heatmap"):
-    """绘制隐藏状态热力图"""
+    """绘制隐藏状态热力图：展示所有神经元在不同时间步的激活值"""
     h_sample = h_all[0].detach().cpu().numpy()
     h_sample = h_sample.T
     
@@ -150,7 +150,7 @@ def plot_hidden_state_heatmap(h_all, save_path, title="Hidden State Heatmap"):
 
 
 def plot_class_probability_flow(logits_seq, class_names, save_path, title="Class Probability Flow", temperature=2.0):
-    """绘制类别概率流"""
+    """绘制类别概率流：展示每个类别在不同时间步的预测概率变化"""
     scaled_logits = logits_seq / temperature
     probs = F.softmax(scaled_logits, dim=-1).detach().cpu().numpy()
     
@@ -173,7 +173,7 @@ def plot_class_probability_flow(logits_seq, class_names, save_path, title="Class
 
 
 def plot_neuron_dynamics_trace(h_trace, input_seq, neuron_idx, save_path, title="Neuron Dynamics Trace"):
-    """绘制神经元动力学轨迹"""
+    """绘制神经元动力学轨迹：展示特定神经元的隐藏状态和输入信号随时间的变化"""
     h_neuron = h_trace[:, neuron_idx].detach().cpu().numpy()
     if input_seq.dim() == 3:
         input_feat = input_seq[0, :, 0].detach().cpu().numpy()

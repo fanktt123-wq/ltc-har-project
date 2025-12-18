@@ -17,7 +17,7 @@ def train_eval(model, loader_train, loader_test_clean, loader_test_noisy, device
     last_input_seq = None
     
     def eval_loader(loader, return_predictions=False):
-        """评估数据加载器"""
+        """评估数据加载器：计算准确率，可选返回预测结果和隐藏状态"""
         tot_t, corr_t = 0, 0
         all_preds, all_labels = [], []
         last_h = None

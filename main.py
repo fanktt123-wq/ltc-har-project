@@ -18,8 +18,9 @@ from config import CLASS_NAMES, NUM_CLASSES
 
 
 def main():
+    """主函数：解析参数、训练模型、评估性能并生成可视化结果"""
     parser = argparse.ArgumentParser(description="LTC (closer-to-paper) on UCI HAR with clean/noisy test eval")
-    parser.add_argument("-data-dir", type=str, default="./har_data", help="root dir for UCI HAR")
+    parser.add_argument("-data-dir", type=str, default="./data", help="root dir for UCI HAR (will use data folder automatically)")
     parser.add_argument("-out-dir", type=str, default="./ltc_logs_har", help="dir for logs/checkpoints")
     parser.add_argument("-device", type=str, default="cuda:0", help="device")
     parser.add_argument("-epochs", type=int, default=200, help="training epochs")

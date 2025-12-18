@@ -10,6 +10,7 @@ class LTCCell(nn.Module):
     
     def __init__(self, input_size: int, hidden_size: int, dt: float = 0.05, 
                  tau_min=1e-3, tau_max=10.0, E_rev_init=0.0):
+        """初始化LTC单元：设置输入/隐藏维度、时间步长和可学习参数"""
         super().__init__()
         self.input_size = input_size
         self.hidden_size = hidden_size
@@ -26,14 +27,14 @@ class LTCCell(nn.Module):
         self.reset_parameters()
 
     def reset_parameters(self):
-        """初始化参数"""
+        """初始化参数：使用Kaiming初始化权重，均匀初始化偏置，正态初始化时间常数"""
         nn.init.kaiming_uniform_(self.W_hh, a=np.sqrt(5))
         nn.init.kaiming_uniform_(self.W_xh, a=np.sqrt(5))
         nn.init.uniform_(self.bias, -1.0, -0.5)
         nn.init.normal_(self.log_tau, mean=0.0, std=0.1)
 
     def forward(self, x_t: torch.Tensor, h_prev: torch.Tensor) -> torch.Tensor:
-        """前向传播"""
+        """前向传播：通过ODE积分计算当前时间步的隐藏状态"""
         tau = torch.clamp(F.softplus(self.log_tau) + self.tau_min, max=self.tau_max)
         f_val = torch.tanh(F.linear(h_prev, self.W_hh) + F.linear(x_t, self.W_xh) + self.bias)
         dhdt = -(1.0 / tau + f_val) * h_prev + f_val * self.E_rev
@@ -45,6 +46,7 @@ class LTCLayer(nn.Module):
     """LTC Layer，处理序列输入"""
     
     def __init__(self, input_size: int, hidden_size: int, dt: float = 0.05):
+        """初始化LTC层：创建LTC单元用于处理序列"""
         super().__init__()
         self.cell = LTCCell(input_size, hidden_size, dt)
 
@@ -63,6 +65,7 @@ class LTCHAR(nn.Module):
     """LTC模型用于HAR任务"""
     
     def __init__(self, input_size=9, hidden_size=256, num_classes=6, dt=0.05, dropout=0.3):
+        """初始化LTC模型：包含LTC层、Dropout和分类头"""
         super().__init__()
         self.ltc = LTCLayer(input_size, hidden_size, dt)
         self.dropout = nn.Dropout(dropout)

@@ -1,28 +1,32 @@
 import os
 import zipfile
-import urllib.request
 import numpy as np
 import torch
 import torch.utils.data as data
 
 
-UCI_URL = "https://archive.ics.uci.edu/static/public/240/human+activity+recognition+using+smartphones.zip"
-
-
 def download_and_extract(root: str):
-    """下载并解压UCI HAR数据集"""
-    os.makedirs(root, exist_ok=True)
-    zip_path = os.path.join(root, "uci_har.zip")
-    extract_dir = os.path.join(root, "UCI HAR Dataset")
+    """加载并解压UCI HAR数据集"""
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(current_dir) if os.path.basename(current_dir) != 'lnn' else current_dir
+    
+    data_dir = os.path.join(project_root, "data")
+    zip_path = os.path.join(data_dir, "UCI HAR.zip")
+    extract_dir = os.path.join(data_dir, "UCI HAR Dataset")
+    
     if os.path.isdir(extract_dir):
         return extract_dir
-    if not os.path.exists(zip_path):
-        print("Downloading UCI HAR...")
-        urllib.request.urlretrieve(UCI_URL, zip_path)
-    print("Extracting...")
-    with zipfile.ZipFile(zip_path, "r") as zf:
-        zf.extractall(root)
-    return extract_dir
+    
+    if os.path.exists(zip_path):
+        print(f"Extracting UCI HAR dataset...")
+        with zipfile.ZipFile(zip_path, "r") as zf:
+            zf.extractall(data_dir)
+        return extract_dir
+    
+    raise FileNotFoundError(
+        f"UCI HAR dataset not found. Please ensure the zip file 'UCI HAR.zip' exists in the data folder:\n"
+        f"  {zip_path}"
+    )
 
 
 def load_split(extract_dir: str, split: str):
@@ -50,6 +54,7 @@ class UCIHAR(data.Dataset):
     train_std = None
     
     def __init__(self, root: str, split: str, drop_ratio: float = 0.0, noise_sigma: float = 0.0):
+        """初始化数据集：加载数据、标准化、应用dropout和噪声"""
         extract_dir = download_and_extract(root)
         X, y = load_split(extract_dir, split)
         
@@ -74,9 +79,11 @@ class UCIHAR(data.Dataset):
         self.noise_sigma = noise_sigma
 
     def __len__(self):
+        """返回数据集大小"""
         return len(self.y)
 
     def __getitem__(self, idx):
+        """获取单个样本：应用dropout和噪声增强"""
         seq = self.X[idx]
         if self.drop_ratio > 0:
             keep = np.random.binomial(1, 1 - self.drop_ratio, size=(seq.shape[0], 1)).astype(np.float32)
