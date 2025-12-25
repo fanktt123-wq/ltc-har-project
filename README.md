@@ -195,18 +195,20 @@ $$\frac{dh}{dt} = -\left(\frac{1}{\tau} + f(x,h)\right) \cdot h + f(x,h) \cdot E
 - **Dropout层**：防止过拟合
 - **输出层**：全连接层，输出6个活动类别
 
-## 团队成员
-王健淞-负责模块：
-models.py - LTC细胞、LTC层
-config.py - 配置参数
-周杨硕-负责模块
-dataset.py - UCI HAR数据集加载与处理
-train.py - 训练循环与评估函数
-metrics.py - 评估指标计算
+## 团队分工
 张晓萌-负责模块
 main.py - 主程序入口
 visualization.py - 可视化工具
 README.md - 项目文档
+周杨硕-负责模块
+dataset.py - UCI HAR数据集加载与处理
+train.py - 训练循环与评估函数
+metrics.py - 评估指标计算
+王健淞-负责模块：
+models.py - LTC细胞、LTC层
+config.py - 配置参数
+
+
 ## 参考文献
 
 - Hasani, R., Lechner, M., Amini, A., et al. (2020). Liquid Time-Constant Networks. *arXiv preprint arXiv:2006.04439*.
